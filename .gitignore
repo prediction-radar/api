@@ -4,3 +4,4 @@ work/
 csv_files/
 grib_files/
 venv/
+.DS_Store
