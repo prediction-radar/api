@@ -1,7 +1,4 @@
-output_grib2/
-results/
-work/
-csv_files/
 grib_files/
+csv_files/
 venv/
 .DS_Store

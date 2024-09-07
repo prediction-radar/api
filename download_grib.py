@@ -3,23 +3,24 @@ import requests
 import gzip
 import shutil
 import subprocess
+import glob
 import xarray as xr
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Configuration
-current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+current_time = datetime.now(timezone.utc).strftime('%d-%m-%Y_%H%M')
 file_url = 'https://mrms.ncep.noaa.gov/data/2D/MergedReflectivityAtLowestAltitude/MRMS_MergedReflectivityAtLowestAltitude.latest.grib2.gz'
-local_directory = '/Users/trevorwiebe/Ktor/radar_backend/radar_data/grib_files'
-csv_directory = '/Users/trevorwiebe/Ktor/radar_backend/radar_data/csv_files'
+grib_directory = '/var/www/radar_data/grib_files'
+csv_directory = '/var/www/radar_data/csv_files'
 
-compressed_file_path = os.path.join(local_directory, 'MRMS_MergedReflectivityAtLowestAltitude.latest.grib2.gz')
-decompressed_file_path = os.path.join(local_directory, f'{current_time}.grib2')
-cropped_grib_file = os.path.join(local_directory, f'{current_time}_cropped.grib2')
-idx_cropped_grib_file = os.path.join(local_directory, f'{current_time}_cropped.grib2.9093e.idx')
+compressed_file_path = os.path.join(grib_directory, f'{current_time}.grib2.gz')
+decompressed_file_path = os.path.join(grib_directory, f'{current_time}_decompressed.grib2')
+cropped_grib_file = os.path.join(grib_directory, f'{current_time}_cropped.grib2')
+idx_cropped_grib_file = os.path.join(grib_directory, f'{current_time}_cropped.grib2.9093e.idx')
 csv_file = os.path.join(csv_directory, f'{current_time}_cropped.csv')
 
 # Ensure the local directory exists
-os.makedirs(local_directory, exist_ok=True)
+os.makedirs(grib_directory, exist_ok=True)
 
 def download_file(url, compressed_file_path):
     with requests.get(url, stream=True) as r:
@@ -37,21 +38,24 @@ def decompress_file(compressed_path, decompressed_path):
 
 def crop_grib(input_file, output_file, left_long, right_long, top_lat, bottom_lat):
     # Format the command and arguments
+
+    # Construct the wgrib2 command
     command = [
-        "cdo",
-        f"sellonlatbox,{left_long},{right_long},{top_lat},{bottom_lat}",
+        'wgrib2',
         input_file,
+        '-small_grib',
+        f'{left_long}:{right_long}',
+        f'{bottom_lat}:{top_lat}',
         output_file
     ]
 
     # Run the command
-    result = subprocess.run(command, capture_output=True, text=True)
-
-    # Return the output or error
-    if result.returncode == 0:
-        return f"Command executed successfully\nOutput: {result.stdout}"
-    else:
-        return f"Error: {result.stderr}"
+    try:
+        result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(f'Successfully cropped the GRIB2 file: {output_file}')
+        print(result.stdout.decode('utf-8'))
+    except subprocess.CalledProcessError as e:
+        print(f'Error occurred: {e.stderr.decode("utf-8")}')
 
 def delete_file(file_path):
     if os.path.exists(file_path):
@@ -64,6 +68,17 @@ def output_to_csv(grib_file):
     df = ds.to_dataframe().reset_index()
     df.to_csv(csv_file, index=False)
 
+def delete_idx_files(directory_path):
+
+    pattern = os.path.join(directory_path, '*.grib2.*.idx')
+
+    # Find all files ending with .idx in the directory
+    idx_files = glob.glob(pattern)
+
+    # Loop through the list and delete each file
+    for file_path in idx_files:
+        os.remove(file_path)
+        print(f"Deleted: {file_path}")
 
 def main():
     try:
@@ -74,11 +89,11 @@ def main():
 
         if not os.path.exists(decompressed_file_path):
             decompress_file(compressed_file_path, decompressed_file_path)
-            crop_grib(decompressed_file_path, cropped_grib_file, -101.25, -95.625, 40.9799, 36.59789)
+            crop_grib(decompressed_file_path, cropped_grib_file, -101.25, -95.625, 36.59789, 31.95216)
             output_to_csv(cropped_grib_file)
             delete_file(compressed_file_path)
-            delete_file(decompressed_file_path)
-            delete_file(idx_cropped_grib_file)
+            delete_file(cropped_grib_file)
+            delete_idx_files(grib_directory)
         else:
             print(f"The decompressed file {decompressed_file_path} already exists.")
     except Exception as e:
