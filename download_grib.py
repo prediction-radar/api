@@ -49,9 +49,16 @@ def crop_grib(input_file, output_file, left_long, right_long, top_lat, bottom_la
         output_file
     ]
 
+    cdo_command = [
+        'cdo',
+        'sellonlatbox,' + f'{left_long},{right_long},{bottom_lat},{top_lat}',
+        input_file,
+        output_file
+    ]
+
     # Run the command
     try:
-        result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        result = subprocess.run(cdo_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         print(f'Successfully cropped the GRIB2 file: {output_file}')
         print(result.stdout.decode('utf-8'))
     except subprocess.CalledProcessError as e:
@@ -89,7 +96,8 @@ def main():
 
         if not os.path.exists(decompressed_file_path):
             decompress_file(compressed_file_path, decompressed_file_path)
-            crop_grib(decompressed_file_path, cropped_grib_file, -101.25, -95.625, 36.59789, 31.95216)
+            crop_grib(decompressed_file_path, cropped_grib_file, -95.45, -92.05, 31.05, 33.95)
+            # crop_grib(decompressed_file_path, cropped_grib_file, -101.25, -95.625, 36.59789, 31.95216)
             output_to_csv(cropped_grib_file)
             delete_file(compressed_file_path)
             delete_file(cropped_grib_file)
