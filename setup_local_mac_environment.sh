@@ -14,7 +14,7 @@
 # conda environment location:
 #	/usr/local/anaconda3/envs/opencv
 
-pip3 install torch torchvision jupyter scikit-learn
+pip3 install torch torchvision jupyter scikit-learn tensorflow
 
 conda install -y requests
 
