@@ -5,3 +5,4 @@ data/
 .DS_Store
 sync_changes_to_cloud
 random_coords.txt
+combined_data.csv
