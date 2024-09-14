@@ -7,13 +7,18 @@ import matplotlib.colors as mcolors
 def reflectivity_to_color(reflectivity):
     # Define the reflectivity thresholds and corresponding colors
     reflectivity_colors = [
-        (5, "#0000FF"),   # Blue for light rain
-        (15, "#00FF00"),  # Green for moderate rain
-        (25, "#FFFF00"),  # Yellow for heavy rain
-        (35, "#FFA500"),  # Orange for very heavy rain
-        (45, "#FF0000"),  # Red for intense rain
-        (55, "#800080"),  # Purple for extreme rain
-        (65, "#FFFFFF"),  # White for hail
+        (15, "#00FFFF"),   # Cyan for no rain to light rain (< 15 dBZ)
+        (20, "#00BFFF"),   # Light blue for very light rain (15 - 20 dBZ)
+        (25, "#00FF00"),   # Green for light rain (20 - 25 dBZ)
+        (30, "#ADFF2F"),   # Green-yellow for light to moderate rain (25 - 30 dBZ)
+        (35, "#FFFF00"),   # Yellow for moderate rain (30 - 35 dBZ)
+        (40, "#FFD700"),   # Gold for moderately heavy rain (35 - 40 dBZ)
+        (45, "#FFA500"),   # Orange for heavy rain (40 - 45 dBZ)
+        (50, "#FF8C00"),   # Dark orange for very heavy rain (45 - 50 dBZ)
+        (55, "#FF4500"),   # Orange-red for intense rain (50 - 55 dBZ)
+        (60, "#FF0000"),   # Red for extremely intense rain (55 - 60 dBZ)
+        (65, "#8B0000"),   # Dark red for violent rain / large hail (60 - 65 dBZ)
+        (70, "#FF00FF"),   # Magenta for extreme hail (65+ dBZ)
     ]
 
     for threshold, color in reflectivity_colors:
@@ -37,7 +42,7 @@ image_array = np.zeros((lat_grid_size, lon_grid_size, 4), dtype=np.uint8)
 
 # Fill the image array with colors based on reflectivity
 for index, row in data.iterrows():
-    lat_index = int((row['latitude'] - lat_min) * 100)  # Adjust the multiplier as needed for resolution
+    lat_index = lat_grid_size - 1 - int((row['latitude'] - lat_min) * 100)  # Adjust the multiplier as needed for resolution
     lon_index = int((row['longitude'] - lon_min) * 100)  # Adjust the multiplier as needed for resolution
     
     if 0 <= lat_index < lat_grid_size and 0 <= lon_index < lon_grid_size:
