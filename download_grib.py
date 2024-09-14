@@ -146,10 +146,10 @@ def delete_idx_files(directory_path):
         print(f"Deleted: {file_path}")
 
 def main():
-    random_latitude_and_longitude = random_point_in_bbox(50, 25, -125, -65, 'random_coords.txt')
+    random_latitude_and_longitude = random_point_in_bbox(50, 25, -125, -65, '/root/data_processing/random_coords.txt')
     latitude = random_latitude_and_longitude[0]
     longitude = random_latitude_and_longitude[1]
-    distance = 100
+    distance = 200
     try:
         if not os.path.exists(compressed_file_path):
             download_file(file_url, compressed_file_path)
