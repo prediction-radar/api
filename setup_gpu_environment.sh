@@ -15,9 +15,13 @@
 #	/usr/local/anaconda3/envs/opencv
 
 # check if in local environment
-# install pandas, numpy, matplotlib
+# install pandas, matplotlib
 
 sudo apt-get update
+
+suda apt-get install vim
+
+ssh-keygen -t rsa
 
 sudo apt-get install curl
 
@@ -31,4 +35,8 @@ conda create -n "radarenv" python=3
 
 conda activate radarenv
 
-conda install pytorch torchvision -c pytorch
+conda install -y pytorch torchvision -c pytorch
+
+yes | pip3 install pandas matplotlib
+
+yes | python3 -m pip install tensorflow
