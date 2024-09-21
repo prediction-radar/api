@@ -25,15 +25,19 @@ ssh-keygen -t rsa
 
 sudo apt-get install curl
 
+cd /tmp
+
 curl -O https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 
 bash Anaconda3–2020.11-Linux-x86_64.sh
 
 source ~/.bashrc
 
-conda create -n "radarenv" python=3
+git clone git@github.com:trevorwiebe/radar-data.git
 
-conda activate radarenv
+# conda create -n "radarenv" python=3
+
+# conda activate radarenv
 
 conda install -y pytorch torchvision -c pytorch
 
