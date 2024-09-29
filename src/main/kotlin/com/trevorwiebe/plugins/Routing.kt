@@ -1,5 +1,6 @@
 package com.trevorwiebe.plugins
 
+import com.trevorwiebe.data.dto.TwoMinuteRainDto
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -39,8 +40,8 @@ fun Application.configureRouting() {
             }
         }
         get("/rain"){
-            val latitude = call.request.queryParameters["lat"]
-            val longitude = call.request.queryParameters["lon"]
+            val latitude = call.request.queryParameters["lat"]?.toFloatOrNull()
+            val longitude = call.request.queryParameters["lon"]?.toFloatOrNull()
 
             if(latitude == null || longitude == null){
                 return@get call.respondText(
@@ -49,6 +50,25 @@ fun Application.configureRouting() {
                 )
             }
 
+            val dummyData = listOf(
+                TwoMinuteRainDto(
+                    "9/21/2024 21:36",
+                    32,
+                    latitude,
+                    longitude
+                ),
+                TwoMinuteRainDto(
+                    "9/21/2024 21:38",
+                    34,
+                    latitude,
+                    longitude
+                )
+            )
+
+            call.respond(
+                message = dummyData,
+                status = HttpStatusCode.OK
+            )
         }
     }
 }
