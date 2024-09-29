@@ -35,3 +35,6 @@ out/
 ### VS Code ###
 .vscode/
 
+**/.DS_Store
+radar_data/notebooks/testing_conv_lstm_2.ipynb
+radar_data/notebooks/testing_conv_lstm.ipynb
