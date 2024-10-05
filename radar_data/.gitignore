@@ -6,3 +6,4 @@ data/
 sync_changes_to_cloud
 random_coords.txt
 combined_data.csv
+model/test_conv_lstm.keras
