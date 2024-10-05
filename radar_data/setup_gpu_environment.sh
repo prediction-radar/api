@@ -41,6 +41,6 @@ git clone git@github.com:trevorwiebe/radar-data.git
 
 conda install -y pytorch torchvision -c pytorch
 
-yes | pip3 install pandas matplotlib
+yes | python3 -m pip install tensorflow[and-cuda]
 
-yes | python3 -m pip install tensorflow
+yes | pip3 install pandas matplotlib scikit-learn imageio
