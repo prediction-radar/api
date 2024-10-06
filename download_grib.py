@@ -6,6 +6,7 @@ import subprocess
 import glob
 import random
 import math
+import numpy as np
 import xarray as xr
 from datetime import datetime, timezone
 
@@ -14,12 +15,14 @@ current_time = datetime.now(timezone.utc).strftime('%d-%m-%Y-%H%M')
 file_url = 'https://mrms.ncep.noaa.gov/data/2D/MergedReflectivityAtLowestAltitude/MRMS_MergedReflectivityAtLowestAltitude.latest.grib2.gz'
 grib_directory = '/var/www/radar_data/grib_files'
 csv_directory = '/var/www/radar_data/csv_files'
+npy_directory = '/var/www/radar_data/npy_files'
 
 compressed_file_path = os.path.join(grib_directory, f'{current_time}.grib2.gz')
 decompressed_file_path = os.path.join(grib_directory, f'{current_time}_decompressed.grib2')
 cropped_grib_file = os.path.join(grib_directory, f'{current_time}_cropped.grib2')
 idx_cropped_grib_file = os.path.join(grib_directory, f'{current_time}_cropped.grib2.9093e.idx')
 csv_file = os.path.join(csv_directory, f'{current_time}_cropped.csv')
+npy_file = os.path.join(npy_directory, f'{current_time}.npy')
 
 # Ensure the local directory exists
 os.makedirs(grib_directory, exist_ok=True)
@@ -128,10 +131,15 @@ def delete_file(file_path):
     else:
         print(f"File {file_path} does not exists, so it could not be deleted.")
 
-def output_to_csv(grib_file):
-    ds = xr.open_dataset(grib_file, engine='cfgrib')
+def output_to_csv(grib_file_location, csv_file_location):
+    ds = xr.open_dataset(grib_file_location, engine='cfgrib')
     df = ds.to_dataframe().reset_index()
-    df.to_csv(csv_file, index=False)
+    df.to_csv(csv_file_location, index=False)
+
+def output_to_npy(grib_file_location, npy_file_location):
+    ds = xr.open_dataset(grib_file_location, engine='cfgrib')
+    data_array = ds.to_array().values
+    np.save(npy_file_location, data_array)
 
 def delete_idx_files(directory_path):
 
@@ -149,7 +157,7 @@ def main():
     random_latitude_and_longitude = random_point_in_bbox(50, 25, -125, -65, '/root/data_processing/random_coords.txt')
     latitude = random_latitude_and_longitude[0]
     longitude = random_latitude_and_longitude[1]
-    distance = 200
+    distance = 100
     try:
         if not os.path.exists(compressed_file_path):
             download_file(file_url, compressed_file_path)
@@ -158,9 +166,10 @@ def main():
 
         if not os.path.exists(decompressed_file_path):
             decompress_file(compressed_file_path, decompressed_file_path)
-            bb = calculate_bounding_box(latitude, longitude, distance)
-            crop_grib(decompressed_file_path, cropped_grib_file, bb['left_lon'], bb['right_lon'], bb['bottom_lat'], bb['top_lat'])
-            output_to_csv(cropped_grib_file)
+            #bb = calculate_bounding_box(latitude, longitude, distance)
+            #crop_grib(decompressed_file_path, cropped_grib_file, bb['left_lon'], bb['right_lon'], bb['bottom_lat'], bb['top_lat'])
+            #output_to_csv(cropped_grib_file, csv_file)
+            output_to_npy(decompressed_file_path, npy_file)
             delete_file(compressed_file_path)
             delete_file(decompressed_file_path)
             delete_file(cropped_grib_file)
