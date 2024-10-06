@@ -1,0 +1,9 @@
+cd ~/Ktor/radar_backend
+
+./gradlew shadowJar
+
+ssh root@69.48.179.226 -p 7822 '/root/server/kill_current_process'
+
+rsync -ra --progress -e "ssh -p 7822" ~/Ktor/radar_backend/build/libs/com.trevorwiebe.radar_backend-all.jar root@69.48.179.226:/root
+
+ssh root@69.48.179.226 -p 7822 '/root/server/restart_process'

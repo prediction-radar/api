@@ -1,8 +1,40 @@
-grib_files/
-csv_files/
-venv/
-data/
-.DS_Store
-sync_changes_to_cloud
-random_coords.txt
-combined_data.csv
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/main/**/bin/
+!**/src/test/**/bin/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+!**/src/main/**/out/
+!**/src/test/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+### VS Code ###
+.vscode/
+
+**/.DS_Store
+radar_data/notebooks/testing_conv_lstm_2.ipynb
+radar_data/notebooks/testing_conv_lstm.ipynb
