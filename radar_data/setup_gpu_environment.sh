@@ -17,29 +17,29 @@
 # check if in local environment
 # install pandas, matplotlib
 
-sudo apt-get update
+sudo apt-get -y update
 
-suda apt-get install vim
+sudo apt-get -y install vim
 
-ssh-keygen -t rsa
+#ssh-keygen -t rsa
 
-sudo apt-get install curl
+#sudo apt-get install curl
 
-cd /tmp
+#cd /tmp
 
-curl -O https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
+#curl -O https://repo.anaconda.com/archive/Anaconda3-2020.11-Linux-x86_64.sh
 
-bash Anaconda3–2020.11-Linux-x86_64.sh
+#bash Anaconda3–2020.11-Linux-x86_64.sh
 
-source ~/.bashrc
+#source ~/.bashrc
 
-git clone git@github.com:trevorwiebe/radar-data.git
+#git clone git@github.com:trevorwiebe/radar-data.git
 
 # conda create -n "radarenv" python=3
 
 # conda activate radarenv
 
-conda install -y pytorch torchvision -c pytorch
+#conda install -y pytorch torchvision -c pytorch
 
 yes | python3 -m pip install tensorflow[and-cuda]
 
