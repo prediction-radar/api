@@ -100,33 +100,24 @@ def remove_duplicates(X, y):
     - X_unique: numpy array of unique input sequences
     - y_unique: numpy array of corresponding unique output sequences
     """
-    unique_indices = []
+    valid_indices = []
     num_samples = X.shape[0]
-    
-    # Track whether we've already seen a duplicate
-    seen = np.zeros(num_samples, dtype=bool)
+    threshold = 100000
     
     for i in range(num_samples):
-        if seen[i]:
-            continue  # Skip if this sample was already identified as a duplicate
+        # Sum the pixel values for both X[i] and y[i]
+        x_sum = np.sum(X[i])
+        y_sum = np.sum(y[i])
         
-        # Mark the current sample as part of the unique set
-        unique_indices.append(i)
-        
-        # Check for duplicates in the rest of the dataset
-        for j in range(i + 1, num_samples):
-            if seen[j]:
-                continue  # Skip already marked duplicates
-            
-            # Check if both X and y sequences are identical
-            if np.array_equal(X[i], X[j]) and np.array_equal(y[i], y[j]):
-                seen[j] = True  # Mark this as a duplicate
+        # If the sum is greater than or equal to the threshold, keep this sample
+        if x_sum + y_sum >= threshold:
+            valid_indices.append(i)
     
-    # Select only the unique indices for X and y
-    X_unique = X[unique_indices]
-    y_unique = y[unique_indices]
+    # Select only the valid indices for X and y
+    X_filtered = X[valid_indices]
+    y_filtered = y[valid_indices]
     
-    return X_unique, y_unique
+    return X_filtered, y_filtered
 
 X_unique, y_unique = remove_duplicates(X, y)
 
@@ -149,7 +140,7 @@ X_val, X_test, y_val, y_test = train_test_split(
 )
 
 # current model name
-model_name = "model6_6.keras"
+model_name = "model6_7.keras"
 
 # Path to the model
 model_path = root_dir + f"model/{model_name}"
@@ -158,7 +149,7 @@ model_path = root_dir + f"model/{model_name}"
 model = load_model(model_path)
 
 # Create an Adam optimizer with a custom learning rate
-optimizer = AdamW(learning_rate=0.00001)  # Set the learning rate here
+optimizer = AdamW()  # Set the learning rate here
 
 # Compile the model with the optimizer
 model.compile(loss='mae', optimizer=optimizer)
@@ -171,7 +162,7 @@ reduce_lr = ReduceLROnPlateau(monitor="val_loss", patience=5)
 # Train the model
 history = model.fit(X_train, y_train, 
           batch_size=1, 
-          epochs=10, 
+          epochs=20, 
           callbacks=[cp, early_stopping, reduce_lr],
           validation_data=(X_val, y_val))
 
