@@ -24,21 +24,16 @@ fun Application.configureRouting() {
                 status = HttpStatusCode.BadRequest
             )
 
-            val fileName = "/root/radar_data/results/${zoomLevel}_${x}_${y}.png"
-            println(fileName)
-
+            val fileName = "/root/radar-processing-data/app_data/$zoomLevel/$x/$y"
             val imageFile = File(fileName)
 
             if (imageFile.exists()) {
-                // Set the content type based on your image
-                call.response.header(HttpHeaders.ContentType, ContentType.Image.JPEG.toString())
-                // Send the image file as a ByteArray
-                call.respondBytes(imageFile.readBytes(), ContentType.Image.JPEG)
+                call.respondBytes(imageFile.readBytes(), contentType = ContentType.Image.PNG)
             } else {
-                // Handle the case where the image file doesn't exist
-                call.respond(HttpStatusCode.NotFound)
+                call.respondText("Image not found", status = HttpStatusCode.NotFound)
             }
         }
+
         get("/rain"){
             val latitude = call.request.queryParameters["lat"]?.toFloatOrNull()
             val longitude = call.request.queryParameters["lon"]?.toFloatOrNull()
