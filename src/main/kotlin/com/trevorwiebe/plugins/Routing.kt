@@ -24,7 +24,7 @@ fun Application.configureRouting() {
                 status = HttpStatusCode.BadRequest
             )
 
-            val fileName = "/root/radar-processing-data/app_data/$zoomLevel/$x/$y"
+            val fileName = "/root/radar-processing-data/app_data/$zoomLevel/$x/$y.png"
             val imageFile = File(fileName)
 
             if (imageFile.exists()) {
