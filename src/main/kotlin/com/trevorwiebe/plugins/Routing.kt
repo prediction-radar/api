@@ -9,7 +9,12 @@ import java.io.File
 
 fun Application.configureRouting() {
     routing {
-        get("/tile/{zoom_level}/{x}/{y}") {
+        get("/tile/{utcTime}/{zoom_level}/{x}/{y}") {
+
+            val utcTime = call.parameters["utcTime"] ?: return@get call.respondText(
+                "Missing or malformed utc time",
+                status = HttpStatusCode.BadRequest
+            )
 
             val zoomLevel = call.parameters["zoom_level"] ?: return@get call.respondText(
                 "Missing or malformed zoom_level",
@@ -24,7 +29,7 @@ fun Application.configureRouting() {
                 status = HttpStatusCode.BadRequest
             )
 
-            val fileName = "/root/radar-processing-data/app_data/$zoomLevel/$x/$y.png"
+            val fileName = "/root/radar-processing-data/app_data/$utcTime/$zoomLevel/$x/$y.png"
             val imageFile = File(fileName)
 
             if (imageFile.exists()) {
@@ -35,12 +40,13 @@ fun Application.configureRouting() {
         }
 
         get("/rain"){
+            val utcTime = call.request.queryParameters["utcTime"]
             val latitude = call.request.queryParameters["lat"]?.toFloatOrNull()
             val longitude = call.request.queryParameters["lon"]?.toFloatOrNull()
 
-            if(latitude == null || longitude == null){
+            if(utcTime == null || latitude == null || longitude == null){
                 return@get call.respondText(
-                    text = "latitude and longitude are both required",
+                    text = "utcTime, latitude and longitude are both required",
                     status = HttpStatusCode.BadRequest
                 )
             }
