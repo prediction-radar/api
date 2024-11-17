@@ -1,10 +1,11 @@
 package com.trevorwiebe.plugins
 
-import com.trevorwiebe.data.dto.TwoMinuteRainDto
+import com.trevorwiebe.domain.GetRainAmounts
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 fun Application.configureRouting() {
@@ -40,36 +41,24 @@ fun Application.configureRouting() {
         }
 
         get("/rain"){
-            val utcTime = call.request.queryParameters["utcTime"]
             val latitude = call.request.queryParameters["lat"]?.toFloatOrNull()
             val longitude = call.request.queryParameters["lon"]?.toFloatOrNull()
 
-            if(utcTime == null || latitude == null || longitude == null){
+            if(latitude == null || longitude == null){
                 return@get call.respondText(
-                    text = "utcTime, latitude and longitude are both required",
+                    text = "latitude and longitude are both required",
                     status = HttpStatusCode.BadRequest
                 )
             }
 
-            val dummyData = listOf(
-                TwoMinuteRainDto(
-                    "9/21/2024 21:36",
-                    32,
-                    latitude,
-                    longitude
-                ),
-                TwoMinuteRainDto(
-                    "9/21/2024 21:38",
-                    34,
-                    latitude,
-                    longitude
-                )
-            )
-
-            call.respond(
-                message = dummyData,
-                status = HttpStatusCode.OK
-            )
+            GetRainAmounts().invoke(latitude.toString(), longitude.toString()){
+                runBlocking {
+                    call.respond(
+                        HttpStatusCode.OK,
+                        it
+                    )
+                }
+            }
         }
     }
 }
