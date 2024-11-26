@@ -1,1 +1,1 @@
-rootProject.name = "com.example.radar_backend"
+rootProject.name = "com.trevorwiebe.radar-api"

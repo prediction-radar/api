@@ -4,6 +4,6 @@ cd ~/Ktor/radar_backend
 
 ssh root@69.48.179.226 -p 7822 '/root/server_utils/kill_current_process'
 
-rsync -ra --progress -e "ssh -p 7822" ~/Ktor/radar_backend/build/libs/com.example.radar_backend-all.jar root@69.48.179.226:/root/server_utils
+rsync -ra --progress -e "ssh -p 7822" ~/Ktor/radar_backend/build/libs/com.trevorwiebe.radar-api-all.jar root@69.48.179.226:/root/server_utils
 
 ssh root@69.48.179.226 -p 7822 '/root/server_utils/restart_process'
